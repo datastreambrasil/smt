@@ -1,6 +1,14 @@
 # Datastream SMT
 
-## Descrição
-Este projeto contém uma lista de SMT que podem ser utilizados no kafka connect, são eles:
+Here you will find a list of Single Message Transforms (SMT) that can be used with Kafka Connect to transform data as it flows through the system.
 
-- `QlikToDebeziumDirectTransform`: Converte os dados do Qlik para o formato do Debezium, permitindo que o Kafka Connect consuma os dados diretamente do Qlik.
+## QlikToDebeziumDirectTransform
+This transform is used to convert Qlik data into a format that can be directly ingested by Debezium. It is designed to work with the Qlik data model and transform it into a 
+format that is compatible with Debezium's requirements.
+
+How to use: 
+
+```
+    transforms: QlikToDebezium
+    transforms.QlikToDebezium.type: br.com.datastreambrasil.kafka.connect.transforms.QlikToDebeziumDirectTransform
+```
