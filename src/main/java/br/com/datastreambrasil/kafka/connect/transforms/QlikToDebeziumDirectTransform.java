@@ -37,10 +37,12 @@ public class QlikToDebeziumDirectTransform<R extends ConnectRecord<R>> implement
         newMessage.put("payload", payload);
 
         payload.put("before", new HashMap<String, Object>());
+        var hasBeforeData = false;
         if (qlikMessage.containsKey("beforeData")) {
             Map<String, Object> beforeData = (Map<String, Object>) qlikMessage.get("beforeData");
             if (beforeData != null) {
                 payload.put("before", beforeData);
+                hasBeforeData = true;
             }
         }
 
@@ -63,6 +65,12 @@ public class QlikToDebeziumDirectTransform<R extends ConnectRecord<R>> implement
                     }
                     if (QlikOperation.DELETE.toString().equals(operation.toString())) {
                         op = "d";
+
+                        // qlik does not send the beforeData in the delete operation, so we set this using the after data
+                        if (!hasBeforeData) {
+                            payload.put("before", payload.get("after"));
+                            payload.put("after", null);
+                        }
                     }
                 }
             }

@@ -12,7 +12,7 @@ import java.util.Map;
 public class QlikToDebeziumDirectTransformTest {
 
     @Test
-    public void testApplyAfter() {
+    public void testApplyInsert() {
 
         var qlikMessage = createQlikAfterMessage(QlikToDebeziumDirectTransform.QlikOperation.INSERT);
         var source = new SourceRecord(null, null, "topic",
@@ -30,15 +30,15 @@ public class QlikToDebeziumDirectTransformTest {
 
             var after = getMapFromMap(payload, "after");
             Assert.assertNotNull(after);
-            Assert.assertEquals(2, after.get("IDT_EMP"));
+            Assert.assertEquals(3, after.get("IDT_EMP"));
         }
 
     }
 
     @Test
-    public void testApplyBefore() {
+    public void testApplyDelete() {
 
-        var qlikMessage = createQlikBeforeMessage(QlikToDebeziumDirectTransform.QlikOperation.DELETE);
+        var qlikMessage = createQlikAfterMessage(QlikToDebeziumDirectTransform.QlikOperation.DELETE);
         var source = new SourceRecord(null, null, "topic",
                 Schema.STRING_SCHEMA, null, Schema.STRING_SCHEMA, qlikMessage);
 
@@ -54,7 +54,35 @@ public class QlikToDebeziumDirectTransformTest {
 
             var before = getMapFromMap(payload, "before");
             Assert.assertNotNull(before);
+            Assert.assertEquals(3, before.get("IDT_EMP"));
+        }
+
+    }
+
+    @Test
+    public void testApplyUpdate() {
+
+        var qlikMessage = createQlikBeforeAfterMessage(QlikToDebeziumDirectTransform.QlikOperation.UPDATE);
+        var source = new SourceRecord(null, null, "topic",
+                Schema.STRING_SCHEMA, null, Schema.STRING_SCHEMA, qlikMessage);
+
+        try (var qlikTransform = new QlikToDebeziumDirectTransform<SourceRecord>()){
+            var output = qlikTransform.apply(source);
+            Assert.assertNotNull(output);
+            Assert.assertTrue(output.value() instanceof Map);
+            var outputValue = (Map<String, Object>) output.value();
+
+            var payload = getMapFromMap(outputValue, "payload");
+            Assert.assertNotNull(payload);
+            Assert.assertEquals("u", payload.get("op"));
+
+            var before = getMapFromMap(payload, "before");
+            Assert.assertNotNull(before);
             Assert.assertEquals(2, before.get("IDT_EMP"));
+
+            var after = getMapFromMap(payload, "after");
+            Assert.assertNotNull(after);
+            Assert.assertEquals(3, after.get("IDT_EMP"));
         }
 
     }
@@ -63,10 +91,10 @@ public class QlikToDebeziumDirectTransformTest {
         return (Map<String, Object>) map.get(key);
     }
 
-    private Map<String,Object> createQlikBeforeMessage(QlikToDebeziumDirectTransform.QlikOperation qlikOperation) {
+    private Map<String,Object> createQlikBeforeAfterMessage(QlikToDebeziumDirectTransform.QlikOperation qlikOperation) {
         Map<String, Object> qlikMessage = new HashMap<>();
         qlikMessage.put("beforeData", Map.of("IDT_EMP", 2));
-        qlikMessage.put("data", null);
+        qlikMessage.put("data", Map.of("IDT_EMP", 3));
         qlikMessage.put("headers", Map.of("operation", qlikOperation.toString()));
         return qlikMessage;
     }
@@ -74,7 +102,7 @@ public class QlikToDebeziumDirectTransformTest {
     private Map<String,Object> createQlikAfterMessage(QlikToDebeziumDirectTransform.QlikOperation qlikOperation) {
         Map<String, Object> qlikMessage = new HashMap<>();
         qlikMessage.put("beforeData", null);
-        qlikMessage.put("data", Map.of("IDT_EMP", 2));
+        qlikMessage.put("data", Map.of("IDT_EMP", 3));
         qlikMessage.put("headers", Map.of("operation", qlikOperation.toString()));
         return qlikMessage;
     }
