@@ -24,11 +24,8 @@ public class QlikToDebeziumDirectTransformTest {
             Assert.assertTrue(output.value() instanceof Map);
             var outputValue = (Map<String, Object>) output.value();
 
-            var payload = getMapFromMap(outputValue, "payload");
-            Assert.assertNotNull(payload);
-            Assert.assertEquals("c", payload.get("op"));
-
-            var after = getMapFromMap(payload, "after");
+            Assert.assertEquals("c", outputValue.get("op"));
+            var after = getMapFromMap(outputValue, "after");
             Assert.assertNotNull(after);
             Assert.assertEquals(3, after.get("IDT_EMP"));
         }
@@ -48,11 +45,9 @@ public class QlikToDebeziumDirectTransformTest {
             Assert.assertTrue(output.value() instanceof Map);
             var outputValue = (Map<String, Object>) output.value();
 
-            var payload = getMapFromMap(outputValue, "payload");
-            Assert.assertNotNull(payload);
-            Assert.assertEquals("d", payload.get("op"));
+            Assert.assertEquals("d", outputValue.get("op"));
 
-            var before = getMapFromMap(payload, "before");
+            var before = getMapFromMap(outputValue, "before");
             Assert.assertNotNull(before);
             Assert.assertEquals(3, before.get("IDT_EMP"));
         }
@@ -72,15 +67,13 @@ public class QlikToDebeziumDirectTransformTest {
             Assert.assertTrue(output.value() instanceof Map);
             var outputValue = (Map<String, Object>) output.value();
 
-            var payload = getMapFromMap(outputValue, "payload");
-            Assert.assertNotNull(payload);
-            Assert.assertEquals("u", payload.get("op"));
+            Assert.assertEquals("u", outputValue.get("op"));
 
-            var before = getMapFromMap(payload, "before");
+            var before = getMapFromMap(outputValue, "before");
             Assert.assertNotNull(before);
             Assert.assertEquals(2, before.get("IDT_EMP"));
 
-            var after = getMapFromMap(payload, "after");
+            var after = getMapFromMap(outputValue, "after");
             Assert.assertNotNull(after);
             Assert.assertEquals(3, after.get("IDT_EMP"));
         }

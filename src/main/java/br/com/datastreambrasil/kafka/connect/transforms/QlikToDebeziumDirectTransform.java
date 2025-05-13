@@ -32,25 +32,23 @@ public class QlikToDebeziumDirectTransform<R extends ConnectRecord<R>> implement
 
         Map<String, Object> qlikMessage = (Map<String, Object>) record.value();
 
-        Map<String, Object> payload = new HashMap<>();
         Map<String, Object> newMessage = new HashMap<>();
-        newMessage.put("payload", payload);
 
-        payload.put("before", new HashMap<String, Object>());
+        newMessage.put("before", new HashMap<String, Object>());
         var hasBeforeData = false;
         if (qlikMessage.containsKey("beforeData")) {
             Map<String, Object> beforeData = (Map<String, Object>) qlikMessage.get("beforeData");
             if (beforeData != null) {
-                payload.put("before", beforeData);
+                newMessage.put("before", beforeData);
                 hasBeforeData = true;
             }
         }
 
-        payload.put("after", new HashMap<String, Object>());
+        newMessage.put("after", new HashMap<String, Object>());
         if (qlikMessage.containsKey("data") && qlikMessage.get("data") != null) {
             Map<String, Object> afterData = (Map<String, Object>) qlikMessage.get("data");
             if (afterData != null) {
-                payload.put("after", afterData);
+                newMessage.put("after", afterData);
             }
         }
 
@@ -68,14 +66,14 @@ public class QlikToDebeziumDirectTransform<R extends ConnectRecord<R>> implement
 
                         // qlik does not send the beforeData in the delete operation, so we set this using the after data
                         if (!hasBeforeData) {
-                            payload.put("before", payload.get("after"));
-                            payload.put("after", null);
+                            newMessage.put("before", newMessage.get("after"));
+                            newMessage.put("after", null);
                         }
                     }
                 }
             }
         }
-        payload.put("op", op);
+        newMessage.put("op", op);
 
         return record.newRecord(
                 record.topic(),
