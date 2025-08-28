@@ -6,7 +6,7 @@ import org.apache.kafka.connect.transforms.Transformation;
 
 import java.util.*;
 
-public class SchemaEvolutionTransform<R extends ConnectRecord<R>> implements Transformation<R> {
+public class QlikToDebeziumWithSchema<R extends ConnectRecord<R>> implements Transformation<R> {
 
     @Override
     public void configure(Map<String, ?> configs) {
