@@ -12,3 +12,14 @@ How to use:
     transforms: QlikToDebezium
     transforms.QlikToDebezium.type: br.com.datastreambrasil.kafka.connect.transforms.QlikToDebeziumDirectTransform
 ```
+
+## AddFixedSchemaQlikToDebezium
+This transform is used to add a fixed schema to Qlik data before it is ingested by Debezium. The schema is inferred from the message 
+so you don't need to add any extra config. 
+
+How to use:
+
+```
+    transforms: AddFixedSchemaQlikToDebezium
+    transforms.AddFixedSchema.type: br.com.datastreambrasil.kafka.connect.transforms.AddFixedSchemaQlikToDebezium
+```
