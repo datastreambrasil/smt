@@ -1,7 +1,6 @@
 package br.com.datastreambrasil.kafka.connect.transforms;
 
 import org.apache.kafka.connect.data.Schema;
-import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.Assert;
 import org.junit.Test;
