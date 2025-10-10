@@ -23,3 +23,13 @@ How to use:
     transforms: AddFixedSchemaQlikToDebezium
     transforms.AddFixedSchema.type: br.com.datastreambrasil.kafka.connect.transforms.AddFixedSchemaQlikToDebezium
 ```
+
+## GenerateKey
+This transform is used to generate a GUID (Globally Unique Identifier) for a record key.
+
+How to use:
+
+```
+    transforms: GenerateKey
+    transforms.GenerateKey.type: br.com.datastreambrasil.kafka.connect.transforms.GenerateGuid$Key
+```
