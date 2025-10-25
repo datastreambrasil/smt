@@ -13,16 +13,19 @@ How to use:
     transforms.QlikToDebezium.type: br.com.datastreambrasil.kafka.connect.transforms.QlikToDebeziumDirectTransform
 ```
 
-## AddFixedSchemaQlikToDebezium
-This transform is used to add a fixed schema to Qlik data before it is ingested by Debezium. The schema is inferred from the message 
-so you don't need to add any extra config. 
+## QlikToDebeziumJdbc
+This transform is used to convert Qlik data into a format that can be ingested by Debezium when using JDBC connectors. 
+It transforms the Qlik data model into a format that is compatible with Debezium's JDBC requirements.
 
 How to use:
 
 ```
-    transforms: AddFixedSchemaQlikToDebezium
-    transforms.AddFixedSchema.type: br.com.datastreambrasil.kafka.connect.transforms.AddFixedSchemaQlikToDebezium
+    transforms: QlikToDebeziumJdbc
+    transforms.QlikToDebeziumJdbc.type: br.com.datastreambrasil.kafka.connect.transforms.QlikToDebeziumJdbc
+    transforms.QlikToDebeziumJdbc.primary.key.fields: "IDT_ACA_CMC,IDT_TIP_ACA_ATM"
 ```
+
+Important to note that the property `primary.key.fields` should follow the same order as the key received in kafka topic.
 
 ## GenerateKey
 This transform is used to generate a GUID (Globally Unique Identifier) for a record key.
