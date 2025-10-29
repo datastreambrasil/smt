@@ -45,15 +45,14 @@ public class QlikToDebeziumJdbc<R extends ConnectRecord<R>> implements Transform
                 .build();
         Object value = record.value();
 
-        if (value instanceof Map) {
-            Map<String,Object> valueMap = (Map<String,Object>) value;
-            Map<String,Object> headersMap = (Map<String,Object>) valueMap.get("headers");
-            String op = String.valueOf(headersMap.get("operation"));
-            if ("delete".equalsIgnoreCase(op)){
-                // we set null, so JDBC Debezium understands it's a delete operation
-                value = null;
-                schemaValue = null;
-            }
+        Map<String,Object> valueMap = (Map<String,Object>) value;
+        Map<String,Object> dataMap = (Map<String,Object>) valueMap.get("data");
+        Map<String,Object> headersMap = (Map<String,Object>) valueMap.get("headers");
+        String op = String.valueOf(headersMap.get("operation"));
+        if ("delete".equalsIgnoreCase(op)){
+            // we set null, so JDBC Debezium understands it's a delete operation
+            value = null;
+            schemaValue = null;
         }
 
         SchemaBuilder keySchemaBuilder = SchemaBuilder.struct();
@@ -62,11 +61,13 @@ public class QlikToDebeziumJdbc<R extends ConnectRecord<R>> implements Transform
         }
         Schema keySchema = keySchemaBuilder.build();
         Struct keyStruct = new Struct(keySchema);
-        String[] keys = record.key().toString().split("\\+");
-        for (int i = 0; i < keys.length; i++) {
-            keyStruct.put(primaryKeyFields.get(i), keys[i].replace("\"", ""));
+        for (String key : primaryKeyFields) {
+            Object keyValue = dataMap.get(key);
+            if (keyValue == null) {
+                throw new RuntimeException("Primary key field '" + key + "' is missing in data");
+            }
+            keyStruct.put(key, String.valueOf(keyValue));
         }
-
         return record.newRecord(
                 record.topic(),
                 record.kafkaPartition(),
